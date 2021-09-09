@@ -4,6 +4,7 @@ A bash shell script to check for Pantheon site updates.
 ## Prerequisites:
 - Terminus: See https://pantheon.io/docs/terminus/install.
 - Terminus Composer Plugin: See https://github.com/pantheon-systems/terminus-composer-plugin.
+
 _Note: The Terminus Composer Plugin is only needed for Composer managed sites._
 
 ## Installation:
