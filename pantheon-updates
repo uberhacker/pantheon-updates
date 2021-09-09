@@ -1,0 +1,31 @@
+#!/bin/bash
+SITES=$(terminus site:list --fields=name --filter=plan_name!=Sandbox --format=string)
+for SITE in $SITES; do
+  DOMAIN="https://live-$SITE-pantheonsite.io"
+  FRAMEWORK=$(terminus site:info $SITE --field=framework)
+  echo "-------------------- $DOMAIN --------------------"
+  case $FRAMEWORK in
+    drupal)
+      terminus drush $SITE.live ups
+      ;;
+    drupal8)
+      DRUSH=$(terminus drush $SITE.live status -- --fields=drush-version | cut -d':' -f2 | xargs | cut -d'.' -f1)
+      case $DRUSH in
+        8)
+          terminus drush $SITE.live ups
+          ;;
+        9|10)
+          terminus drush $SITE.live pm:security
+          terminus composer $SITE.live outdated drupal/*
+          ;;
+      esac
+      ;;
+    wordpress)
+      terminus wp $SITE.live core check-update
+      terminus wp $SITE.live plugin update -- --all --dry-run
+      ;;
+    *)
+      echo "Unsupported framework '$FRAMEWORK'."
+      ;;
+  esac
+done
